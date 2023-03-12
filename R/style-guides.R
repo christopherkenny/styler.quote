@@ -1,0 +1,150 @@
+version <- unlist(unname(read.dcf('DESCRIPTION')[, 'Version']))
+
+#' The quote style
+#'
+#' Style code according to the quote style guide. For more
+#' details and docs, see the [styler::tidyverse_style()].
+#' @inheritParams styler::tidyverse_style
+#' @family obtain transformers
+#' @family style_guides
+#' @examples
+#' style_text('call( 1)', scope = 'spaces')
+#' @export
+quote_style <- function(scope = 'tokens',
+                        strict = TRUE,
+                        indent_by = 2,
+                        start_comments_with_one_space = FALSE,
+                        reindention = tidyverse_reindention(),
+                        math_token_spacing = tidyverse_math_token_spacing()) {
+  args <- as.list(environment())
+  scope <- styler:::scope_normalize(scope)
+  indention_manipulators <- if ('indention' %in% scope) {
+    list(
+      indent_braces = purrr::partial(styler:::indent_braces, indent_by = indent_by),
+      unindent_fun_dec = styler:::unindent_fun_dec,
+      indent_op = purrr::partial(styler:::indent_op, indent_by = indent_by),
+      indent_eq_sub = purrr::partial(styler:::indent_eq_sub, indent_by = indent_by),
+      indent_without_paren = purrr::partial(styler:::indent_without_paren,
+                                     indent_by = indent_by
+      ),
+      update_indention_ref_fun_dec = styler:::update_indention_ref_fun_dec
+    )
+  }
+  space_manipulators <- if ('spaces' %in% scope) {
+    list(
+      remove_space_before_closing_paren = styler:::remove_space_before_closing_paren,
+      remove_space_before_opening_paren = if (strict) {
+        styler:::remove_space_before_opening_paren
+      },
+      add_space_after_for_if_while = styler:::add_space_after_for_if_while,
+      remove_space_before_comma = styler:::remove_space_before_comma,
+      style_space_around_math_token = purrr::partial(
+        styler:::style_space_around_math_token, strict,
+        math_token_spacing$zero,
+        math_token_spacing$one
+      ),
+      style_space_around_tilde = purrr::partial(
+        styler:::style_space_around_tilde,
+        strict = strict
+      ),
+      spacing_around_op = purrr::partial(styler:::set_space_around_op,
+                                         strict = strict
+      ),
+      remove_space_after_opening_paren = styler:::remove_space_after_opening_paren,
+      remove_space_after_excl = styler:::remove_space_after_excl,
+      set_space_after_bang_bang = styler:::set_space_after_bang_bang,
+      remove_space_before_dollar = styler:::remove_space_before_dollar,
+      remove_space_after_fun_dec = styler:::remove_space_after_fun_dec,
+      remove_space_around_colons = styler:::remove_space_around_colons,
+      start_comments_with_space = purrr::partial(styler:::start_comments_with_space,
+                                          force_one = start_comments_with_one_space
+      ),
+      remove_space_after_unary_pm_nested = styler:::remove_space_after_unary_pm_nested,
+      spacing_before_comments = if (strict) {
+        styler:::set_space_before_comments
+      } else {
+        styler:::add_space_before_comments
+      },
+      set_space_between_levels = styler:::set_space_between_levels,
+      set_space_between_eq_sub_and_comma = styler:::set_space_between_eq_sub_and_comma,
+      set_space_in_curly_curly = styler:::set_space_in_curly_curly
+    )
+  }
+
+  use_raw_indention <- !('indention' %in% scope) || length(indention_manipulators) < 1
+
+  line_break_manipulators <- if ('line_breaks' %in% scope) {
+    list(
+      set_line_break_around_comma_and_or = styler:::set_line_break_around_comma_and_or,
+      set_line_break_after_assignment = styler:::set_line_break_after_assignment,
+      set_line_break_before_curly_opening = styler:::set_line_break_before_curly_opening,
+      remove_line_break_before_round_closing_after_curly =
+        if (strict) styler:::remove_line_break_before_round_closing_after_curly,
+      remove_line_breaks_in_fun_dec =
+        if (strict) styler:::remove_line_breaks_in_fun_dec,
+      style_line_break_around_curly = purrr::partial(
+        styler:::style_line_break_around_curly,
+        strict
+      ),
+      # must be after style_line_break_around_curly as it remove line
+      # breaks again for {{.
+      set_line_break_around_curly_curly = styler:::set_line_break_around_curly_curly,
+      set_line_break_before_closing_call = if (strict) {
+        purrr::partial(
+          styler:::set_line_break_before_closing_call,
+          except_token_before = "COMMENT"
+        )
+      },
+      set_line_break_after_opening_if_call_is_multi_line = if (strict) {
+        purrr::partial(
+          styler:::set_line_break_after_opening_if_call_is_multi_line,
+          except_token_after = "COMMENT",
+          # don't modify line break here
+          except_text_before = c("ifelse", "if_else"),
+          force_text_before = "switch" # force line break after first token
+        )
+      },
+      remove_line_break_in_fun_call = purrr::partial(
+        styler:::remove_line_break_in_fun_call,
+        strict = strict
+      ),
+      add_line_break_after_pipe = if (strict) styler:::add_line_break_after_pipe,
+      set_line_break_after_ggplot2_plus = if (strict) {
+        styler:::set_line_break_after_ggplot2_plus
+      }
+    )
+  }
+
+  token_manipulators <- if ('tokens' %in% scope) {
+    list(
+      fix_quotes = fix_quote,
+      force_assignment_op = styler:::force_assignment_op,
+      resolve_semicolon = styler:::resolve_semicolon,
+      add_brackets_in_pipe = styler:::add_brackets_in_pipe,
+      wrap_if_else_while_for_fun_multi_line_in_curly =
+        if (strict) {
+          purrr::partial(
+            styler:::wrap_if_else_while_for_fun_multi_line_in_curly,
+            indent_by = indent_by
+          )
+        }
+    )
+  }
+
+
+
+  create_style_guide(
+    # transformer functions
+    initialize = styler::default_style_guide_attributes,
+    line_break = line_break_manipulators,
+    space = space_manipulators,
+    indention = indention_manipulators,
+    token = token_manipulators,
+    # transformer options
+    use_raw_indention = use_raw_indention,
+    reindention = reindention,
+    style_guide_name = 'styler.quote::quote_style@https://github.com/christopherkenny/styler.quote/',
+    style_guide_version = version,
+    more_specs_style_guide = args
+  )
+}
