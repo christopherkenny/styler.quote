@@ -28,10 +28,10 @@ This is a basic example of how to style code with it.
 ``` r
 library(styler.quote)
 cache_deactivate()
-text <- "x <- 4
+text <- 'x <- 4
 y = 3
 "a";
-"
+'
 
 style_text(text)
 ```
