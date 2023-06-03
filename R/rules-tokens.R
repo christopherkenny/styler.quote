@@ -9,7 +9,7 @@ fix_quote <- function(pd_flat) {
   if (rlang::is_empty(str_const)) {
     return(pd_flat)
   }
-  pd_flat$text[str_const] <- purrr::map(pd_flat$text[str_const], fix_quote_two)
+  pd_flat$text[str_const] <- purrr::map_chr(pd_flat$text[str_const], fix_quote_two)
   pd_flat
 }
 
