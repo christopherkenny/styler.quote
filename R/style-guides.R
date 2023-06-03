@@ -189,16 +189,18 @@ quote_style <- function(scope = 'tokens',
 
   create_style_guide(
     # transformer functions
-    initialize = styler::default_style_guide_attributes,
-    line_break = line_break_manipulators,
-    space = space_manipulators,
-    indention = indention_manipulators,
-    token = token_manipulators,
+    initialize             = default_style_guide_attributes,
+    line_break             =        line_break_manipulators,
+    space                  =             space_manipulators,
+    token                  =             token_manipulators,
+    indention              =         indention_manipulators,
     # transformer options
-    use_raw_indention = use_raw_indention,
-    reindention = reindention,
+    use_raw_indention      =              use_raw_indention,
+    reindention            =                    reindention,
     style_guide_name = 'styler.quote::quote_style@https://github.com/christopherkenny/styler.quote/',
-    style_guide_version = version,
-    more_specs_style_guide = args
+    style_guide_version    =                 styler_version,
+    more_specs_style_guide =                           args,
+    transformers_drop      =              transformers_drop,
+    indent_character       =               indent_character
   )
 }
