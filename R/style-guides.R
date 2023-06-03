@@ -18,6 +18,8 @@ quote_style <- function(scope = 'tokens',
                         math_token_spacing = tidyverse_math_token_spacing()) {
   args <- as.list(environment())
   scope <- styler:::scope_normalize(scope)
+  indent_character <- " "
+
   indention_manipulators <- if ('indention' %in% scope) {
     list(
       indent_braces = purrr::partial(styler:::indent_braces, indent_by = indent_by),
@@ -71,7 +73,7 @@ quote_style <- function(scope = 'tokens',
     )
   }
 
-  use_raw_indention <- !('indention' %in% scope) || length(indention_manipulators) < 1
+  use_raw_indention <- !("indention" %in% scope)
 
   line_break_manipulators <- if ('line_breaks' %in% scope) {
     list(
@@ -130,6 +132,58 @@ quote_style <- function(scope = 'tokens',
         }
     )
   }
+
+
+  transformers_drop <- specify_transformers_drop(
+    spaces = list(
+      # remove_space_before_closing_paren = c("')'", "']'"),
+      # remove_space_before_opening_paren = c("'('", "'['", "LBB"),
+      add_space_after_for_if_while = c("IF", "WHILE", "FOR"),
+      # remove_space_before_comma = "','",
+      set_space_between_eq_sub_and_comma = "EQ_SUB",
+      style_space_around_math_token = c(
+        math_token_spacing$zero,
+        math_token_spacing$one
+      ),
+      style_space_around_tilde = "'~'",
+      # remove_space_after_opening_paren = c("'('", "'['", "LBB"),
+      remove_space_after_excl = "'!'",
+      set_space_after_bang_bang = "'!'",
+      remove_space_before_dollar = "'$'",
+      remove_space_after_fun_dec = "FUNCTION",
+      remove_space_around_colons = c("':'", "NS_GET_INT", "NS_GET"),
+      start_comments_with_space = "COMMENT",
+      remove_space_after_unary_pm_nested = c("'+'", "'-'"),
+      spacing_before_comments = "COMMENT",
+      set_space_in_curly_curly = c("'{'", "'}'")
+    ),
+    indention = list(
+      # indent_braces = c("'('", "'['", "'{'", "')'", "']'", "'}'"),
+      unindent_fun_dec = "FUNCTION",
+      indent_eq_sub = c("EQ_SUB", "EQ_FORMALS"), # TODO rename
+      update_indention_ref_fun_dec = "FUNCTION"
+    ),
+    line_breaks = list(
+      set_line_break_before_curly_opening = "'{'",
+      remove_line_break_before_round_closing_after_curly = "'}'",
+      remove_line_breaks_in_fun_dec = "FUNCTION",
+      set_line_break_around_curly_curly = "'{'",
+      style_line_break_around_curly = "'{'",
+      add_line_break_after_pipe = c("SPECIAL-PIPE", "PIPE")
+    ),
+    tokens = list(
+      resolve_semicolon = "';'",
+      add_brackets_in_pipe = c("SPECIAL-PIPE", "PIPE"),
+      # before 3.6, these assignments are not wrapped into top-level expression
+      # and `text` supplied to transformers_drop() is "", so it appears to not
+      # contain EQ_ASSIGN, and the transformer is falsely removed.
+      # compute_parse_data_nested / text_to_flat_pd ('a = 4')
+      force_assignment_op = "EQ_ASSIGN",
+      wrap_if_else_while_for_fun_multi_line_in_curly = c(
+        "IF", "WHILE", "FOR", "FUNCTION"
+      )
+    )
+  )
 
 
 
