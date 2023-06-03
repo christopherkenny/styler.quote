@@ -1,4 +1,4 @@
-version <- unlist(unname(read.dcf('DESCRIPTION')[, 'Version']))
+styler_version <- unlist(unname(read.dcf('DESCRIPTION')[, 'Version']))
 
 #' The quote style
 #'
