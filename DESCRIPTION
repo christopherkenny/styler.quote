@@ -1,9 +1,8 @@
 Package: styler.quote
 Title: Third-party Style Guide For 'quote' Style
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+Authors@R: person("Christopher T.", "Kenny", email = "christopherkenny@fas.harvard.edu", 
+    role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9386-6860"))
 Description: Styles code according to the 'quote' style using 'styler'.
 License: MIT + file LICENSE
 Encoding: UTF-8

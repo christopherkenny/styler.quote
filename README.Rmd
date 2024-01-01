@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 # styler.quote
 
 <!-- badges: start -->
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![styler.quote status badge](https://christopherkenny.r-universe.dev/badges/styler.quote)](https://christopherkenny.r-universe.dev/styler.quote)
 <!-- badges: end -->
 
 `styler.quote` implements a single-quote variant of the tidyverse style guide. 
